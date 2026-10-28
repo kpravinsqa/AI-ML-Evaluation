@@ -1,0 +1,35 @@
+name: Model Evaluation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Model quality gates
+        run: pytest
+      - name: Prove the suite catches seeded model defects (expected to fail)
+        shell: bash
+        run: |
+          set +e
+          INJECT_DEFECTS=1 pytest -q -o addopts=""
+          code=$?
+          set -e
+          if [ "$code" -eq 1 ]; then echo "Seeded defects detected as expected"; else echo "Unexpected exit code $code"; exit 1; fi
+      - name: Build evaluation workbook
+        run: python -m reports_tool.model_eval_report
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: model-evaluation
+          path: reports/

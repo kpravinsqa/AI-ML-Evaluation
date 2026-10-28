@@ -1,0 +1,11 @@
+{
+  "_comment": "Release gates the model must pass before promotion. Agreed with risk & compliance.",
+  "performance": {"roc_auc_min": 0.75, "recall_default_min": 0.55, "precision_default_min": 0.30, "challenger_min_auc_uplift": -0.01},
+  "segment": {"roc_auc_min_per_segment": 0.68, "segments": ["age_band", "home_ownership"]},
+  "fairness": {"disparate_impact_min": 0.80, "equal_opportunity_diff_max": 0.10, "protected_attributes": ["gender", "age_band"]},
+  "calibration": {"ece_max": 0.05, "brier_max": 0.20},
+  "drift": {"psi_watch": 0.10, "psi_drift": 0.25},
+  "robustness": {"noise_flip_rate_max": 0.05, "noise_pct": 0.02},
+  "inference": {"p95_latency_ms_max": 50, "decision_threshold_approve": 0.20, "decision_threshold_refer": 0.40},
+  "leakage": {"max_abs_correlation_with_target": 0.60}
+}
